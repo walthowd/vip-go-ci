@@ -14,6 +14,7 @@ require_once( __DIR__ . '/ap-file-types.php' );
 require_once( __DIR__ . '/ap-nonfunctional-changes.php' );
 require_once( __DIR__ . '/ap-hashes-api.php' );
 require_once( __DIR__ . '/ap-svg-files.php' );
+require_once( __DIR__ . '/file-validation.php' );
 require_once( __DIR__ . '/svg-scan.php' );
 require_once( __DIR__ . '/other-web-services.php' );
 require_once( __DIR__ . '/support-level-label.php' );
@@ -1590,6 +1591,8 @@ function vipgoci_run() {
 			VIPGOCI_STATS_LINT	=> null,
 			VIPGOCI_STATS_HASHES_API => null,
 		),
+
+		VIPGOCI_SKIPPED_FILES   => array(),
 	);
 
 	/*
@@ -1804,10 +1807,12 @@ function vipgoci_run() {
 	 */
 
 	if ( true === $options['phpcs'] ) {
+
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
-			$results['stats'][ VIPGOCI_STATS_PHPCS ]
+			$results['stats'][ VIPGOCI_STATS_PHPCS ],
+			$results[VIPGOCI_SKIPPED_FILES]
 		);
 	}
 
