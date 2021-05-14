@@ -141,5 +141,14 @@ define( 'VIPGOCI_GIT_DIFF_CALC_CHANGES', array ('+' => 'additions', '-' => 'dele
 /**
  * Define file number of lines limit
  */
-define( 'VIPGOCI_VALIDATION_LIMIT_LINES',   15000           );
 define( 'VIPGOCI_SKIPPED_FILES',	        'skipped-files'	);
+
+define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT',   15000   );
+define( 'VIPGOCI_VALIDATION_MAXIMUM_LINES', 'max-lines'     );
+define(
+	'VIPGOCI_VALIDATION',
+	[
+		VIPGOCI_VALIDATION_MAXIMUM_LINES
+			=> 'Maximum number of lines exceeded (' . VIPGOCI_VALIDATION_MAXIMUM_LINES_LIMIT . ')'
+	]
+);
