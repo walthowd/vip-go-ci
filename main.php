@@ -1807,12 +1807,11 @@ function vipgoci_run() {
 	 */
 
 	if ( true === $options['phpcs'] ) {
-
 		vipgoci_phpcs_scan_commit(
 			$options,
 			$results['issues'],
 			$results['stats'][ VIPGOCI_STATS_PHPCS ],
-			$results[VIPGOCI_SKIPPED_FILES]
+			$results[ VIPGOCI_SKIPPED_FILES ]
 		);
 	}
 

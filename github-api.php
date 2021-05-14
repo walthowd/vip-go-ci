@@ -2453,7 +2453,6 @@ function vipgoci_github_pr_review_submit(
 			}
 		}
 
-
 		/*
 		 * If there are no issues to report to GitHub,
 		 * do not continue processing the Pull-Request.
@@ -2462,7 +2461,8 @@ function vipgoci_github_pr_review_submit(
 		if (
 			( false === $github_errors ) &&
 			( false === $github_warnings ) &&
-			( false === $github_info )
+			( false === $github_info ) &&
+			empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] )
 		) {
 			continue;
 		}
@@ -2579,29 +2579,12 @@ function vipgoci_github_pr_review_submit(
 		}
 
 		/**
-		 * Format skipped files message if it exists
+		 * Format skipped files message if it validation has issues
 		 */
-		if ( !empty( $results[VIPGOCI_SKIPPED_FILES] ) ) {
-			$body_skipped_files = '';
-			foreach ( $results[VIPGOCI_SKIPPED_FILES][$pr_number] as $key => $file ) {
-				$body_skipped_files .= PHP_EOL . '- ' . $key;
-			}
-
-			/**
-			 * This add message header
-			 * Markdown example result:
-			 * ****\n**skipped-files**- Files exceeded the limit of number of lines (15000)\n-fileName.php
-			 * Text result:
-				skipped-files- Files exceeded the limit of number of lines! (15000)
-				src/MyFailedClass.php
-			 */
-			$github_postfields['body'] .= sprintf(
-				'****%s**%s**- Files exceeded the limit of number of lines (%s)%s%s',
-				PHP_EOL,
-				VIPGOCI_SKIPPED_FILES,
-				VIPGOCI_VALIDATION_LIMIT_LINES,
-				PHP_EOL,
-				$body_skipped_files
+		if ( ! empty( $results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ] ) ) {
+			$github_postfields[ 'body' ] .= vipgoci_get_skipped_files_message(
+				$results[ VIPGOCI_SKIPPED_FILES ][ $pr_number ],
+				$pr_number
 			);
 		}
 
@@ -2723,6 +2706,41 @@ function vipgoci_github_pr_review_submit(
 	}
 
 	return;
+}
+
+/**
+ * @param $skipped
+ *
+ * @return string
+ */
+function vipgoci_get_skipped_files_message( $skipped )
+{
+	$body = '';
+	foreach ( $skipped[ 'issues' ] as $issue => $file ) {
+		$body .= vipgoci_get_skipped_files_issue_message(
+			implode( '-', $skipped[ 'issues' ][ $issue ] ),
+			$issue
+		);
+	}
+
+	return $body;
+}
+
+/**
+ * @param $affected_files
+ * @param $issue_type
+ * Ex.: ****\n**skipped-files**- Files exceeded the limit of number of lines (15000)\n-fileName.php
+ * @return string
+ */
+function vipgoci_get_skipped_files_issue_message( $affected_files, $issue_type)
+{
+	return sprintf(
+		'****%s**%s**- %s%s',
+		PHP_EOL,
+		VIPGOCI_VALIDATION[ $issue_type ],
+		PHP_EOL,
+		$affected_files
+	);
 }
 
 /*
